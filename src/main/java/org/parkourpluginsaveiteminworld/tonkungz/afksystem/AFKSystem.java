@@ -66,6 +66,7 @@ public final class AFKSystem extends JavaPlugin implements Listener {
         // Plugin startup logic
 
         getServer().getPluginManager().registerEvents(this, this);
+        getServer().getPluginManager().registerEvents(new PlayerListener(), this);
         getCommand("afks").setExecutor(new AFKCommand());
 
         createDataFile();
@@ -425,8 +426,11 @@ public final class AFKSystem extends JavaPlugin implements Listener {
 
 
                     if (player.hasPermission("ton.antiafkplayer.startafk")) {
+                        afkPlayer(player);
                         player.teleport(new Location(Bukkit.getWorld(world), x, y, z));
+
                         player.sendMessage(ChatColor.GREEN + "คุณเข้าสู่สถานะ AFK แล้ว.");
+
                         return true;
                     } else {
                         player.sendMessage(ChatColor.RED + "คุณไม่มีสิทธิ์ใช้คำสั่งนี้.");
@@ -461,9 +465,11 @@ public final class AFKSystem extends JavaPlugin implements Listener {
 
                 if (targetPlayer != null) {
                     if (sender.hasPermission("ton.antiafkplayer.startafk.others")) {
+                        afkPlayer(targetPlayer);
                         targetPlayer.teleport(new Location(Bukkit.getWorld(world), x, y, z));
                         sender.sendMessage(ChatColor.GREEN + "คุณได้ตั้งผู้เล่น " + targetPlayer.getName() + " ให้เข้าสู่สถานะ AFK แล้ว.");
                         targetPlayer.sendMessage(ChatColor.RED + "คุณถูกตั้งค่าให้เข้าสู่สถานะ AFK โดย " + sender.getName() + ".");
+
                         return true;
                     } else {
                         sender.sendMessage(ChatColor.RED + "คุณไม่มีสิทธิ์ใช้คำสั่งนี้กับผู้เล่นคนอื่น.");
@@ -522,41 +528,19 @@ public final class AFKSystem extends JavaPlugin implements Listener {
     private void afkPlayer(Player player) {
         UUID playerId = player.getUniqueId();
         if (!playerLocations.containsKey(playerId)) {
-
+            playerLocations.put(playerId, player.getLocation());
             String world = dataConfig.getString("mainautoafkzone.world");
-
-
-            String xStr = dataConfig.getString("mainautoafkzone.x");
-            String yStr = dataConfig.getString("mainautoafkzone.y");
-            String zStr = dataConfig.getString("mainautoafkzone.z");
-
-            if (world == null || world.isEmpty() || Bukkit.getWorld(world) == null) {
-                player.sendMessage("§8(§3§lTONKUNG§8) §cไม่พบข้อมูล world หรือ world นี้ไม่ถูกต้อง");
-                return;
-            }
-
-            if (xStr == null || xStr.isEmpty() || yStr == null || yStr.isEmpty() || zStr == null || zStr.isEmpty()) {
-                player.sendMessage("§8(§3§lTONKUNG§8) §cพิกัด x, y, z ไม่ถูกต้องหรือยังไม่ได้ตั้งค่า");
-                return;
-            }
             double x = dataConfig.getDouble("mainautoafkzone.x");
             double y = dataConfig.getDouble("mainautoafkzone.y");
             double z = dataConfig.getDouble("mainautoafkzone.z");
 
-            playerLocations.put(playerId, player.getLocation());
-            player.teleport(new Location(Bukkit.getWorld(world), x, y, z));
-            String titleautoafk1 = dataConfig.getString("title_autoafk_1");
-            String titleautoafk2 = dataConfig.getString("title_autoafk_2");
-            String alreadyafkmessage = dataConfig.getString("already_afk_message");
-            if (titleautoafk1 == null) {
-                titleautoafk1 = "§eคุณกำลัง AFK อยู่!";
-            }
-            if (titleautoafk2 == null) {
-                titleautoafk2 = "§aขยับตัวเพื่อออกจากสถานะ AFK";
-            }
-            if (alreadyafkmessage == null) {
-                alreadyafkmessage = "§cคุณติดสถานะ AFK";
-            }
+            Location afkLocation = new Location(Bukkit.getWorld(world), x, y, z);
+            player.teleport(afkLocation);
+
+            // ส่งข้อความและเอฟเฟกต์ให้ผู้เล่น
+            String titleautoafk1 = dataConfig.getString("title_autoafk_1", "§eคุณกำลัง AFK อยู่!");
+            String titleautoafk2 = dataConfig.getString("title_autoafk_2", "§aขยับตัวเพื่อออกจากสถานะ AFK");
+            String alreadyafkmessage = dataConfig.getString("already_afk_message", "§cคุณติดสถานะ AFK");
 
             player.sendTitle(titleautoafk1, titleautoafk2, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
             player.sendMessage(alreadyafkmessage);
