@@ -26,9 +26,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import java.net.InetAddress;
-import net.luckperms.api.LuckPerms;
-import net.luckperms.api.LuckPermsProvider;
-import net.luckperms.api.model.user.User;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -56,7 +53,6 @@ public final class AFKSystem extends JavaPlugin implements Listener {
     private final Map<String, Location[]> points = new HashMap<>();
     private final Map<UUID, Location> playerLocations = new HashMap<>();
     private final File dataFiles = new File(getDataFolder(), "playerLocations.json");
-    private LuckPerms luckPerms;
     private final Map<Player, Boolean> playerInRegion = new HashMap<>();
     private final Map<UUID, Long> afkTimers = new HashMap<>();
     private final Map<Player, BukkitRunnable> countdownTasks = new HashMap<>();
@@ -77,7 +73,6 @@ public final class AFKSystem extends JavaPlugin implements Listener {
         }
 
         getCommand("afks").setTabCompleter(new AFKCommandTabCompleter(dataConfig));
-        luckPerms = LuckPermsProvider.get();
 
         // Create data folder if it doesn't exist
         if (!getDataFolder().exists()) {
@@ -555,9 +550,7 @@ public final class AFKSystem extends JavaPlugin implements Listener {
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     UUID playerId = player.getUniqueId();
 
-                    // Check if the player has the bypass permission using LuckPerms
-                    User user = luckPerms.getUserManager().getUser(playerId);
-                    if (user != null && user.getCachedData().getPermissionData().checkPermission("bypass.tonkungny.antiafk").asBoolean()) {
+                    if (player.hasPermission("bypass.tonkungny.antiafk")) {
                         continue;
                     }
 
