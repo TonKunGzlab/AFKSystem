@@ -1,0 +1,19 @@
+name: AFKSystem
+version: '${project.version}'
+main: org.parkourpluginsaveiteminworld.tonkungz.afksystem.AFKSystem
+api-version: '1.20'
+commands:
+  afks:
+    description: "Marks locations with a blaze rod or manages points"
+    usage: "/<command> set <name> | /<command> delete <name> | /<command> reload | /<command> setautoafk"
+    permission: tonkung.afk.admin
+  startafk:
+    description: Activate AFK status for yourself or another player
+    usage: /startafk [player]
+permissions:
+  ton.antiafkplayer.startafk:
+    description: Allows players to use the /startafk command on themselves
+    default: true
+  ton.antiafkplayer.startafk.others:
+    description: Allows players to use the /startafk command on other players
+    default: op
