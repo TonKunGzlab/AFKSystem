@@ -4,6 +4,7 @@ AFK system needs to support zone set zone for AFK to receive and set time to wai
 
 Download release plugin in spigot
 Link: https://www.spigotmc.org/resources/afksystem.120524/
+
 Support: https://k2n.tech/
 
 
@@ -11,4 +12,5 @@ AFK System เป็นระบบที่ จะสามารถเซ็�
 
 ดาวน์โหลด ปลั๊กอินเวอร์ชั่นล่าสุด
 ลิ้งค์: https://www.spigotmc.org/resources/afksystem.120524/
+
 ซัพพอร์ตแจ้งปัญหา: https://k2n.tech/
